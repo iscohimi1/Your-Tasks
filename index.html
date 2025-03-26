@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Tasks - by Ismail Himi</title> <!-- Changed Title -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+
+    <canvas id="background-canvas"></canvas>
+
+    <div class="app-container">
+        <header>
+             <!-- Changed Header -->
+            <h1><i class="fas fa-clipboard-check"></i> Your Tasks <i class="fas fa-bolt"></i></h1>
+            <form id="task-form">
+                <div class="input-wrapper">
+                    <input type="text" id="task-input" placeholder="Add a new task (e.g., Buy milk #personal !important)" autocomplete="off" required>
+                    <i class="fas fa-plus input-icon"></i>
+                </div>
+                <button type="submit" class="add-task-btn" aria-label="Add Task">
+                    <i class="fas fa-paper-plane"></i> Add
+                </button>
+            </form>
+            <div class="search-sort-container">
+                 <div class="search-wrapper">
+                    <input type="search" id="search-input" placeholder="Search tasks...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <div class="sort-wrapper">
+                    <label for="sort-select"><i class="fas fa-sort-amount-down"></i> Sort by:</label>
+                    <select id="sort-select">
+                        <option value="manual">My Order</option> <!-- Added Manual Sort -->
+                        <option value="creation-desc">Newest First</option>
+                        <option value="creation-asc">Oldest First</option>
+                        <option value="due-date">Due Date</option>
+                        <option value="priority">Priority</option>
+                        <option value="alphabetical">A-Z</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+         <div class="progress-container">
+            <div class="progress-bar-wrapper">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <span id="progress-text" class="progress-text">0% Complete</span>
+        </div>
+
+        <div class="controls">
+            <div class="task-count">
+                <span id="active-task-count">0</span> tasks active
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all" aria-label="Show all tasks">All</button>
+                <button class="filter-btn" data-filter="active" aria-label="Show active tasks">Active</button>
+                <button class="filter-btn" data-filter="important" aria-label="Show important tasks"><i class="fas fa-star"></i> Important</button>
+                <button class="filter-btn" data-filter="completed" aria-label="Show completed tasks">Completed</button>
+                <div id="tag-filter-container"></div>
+            </div>
+            <button id="clear-completed-btn" class="clear-btn" aria-label="Clear completed tasks" disabled>
+                 <i class="fas fa-broom"></i> Clear Done
+            </button>
+        </div>
+
+        <main>
+            <!-- Added dragstart listener for drag & drop -->
+            <ul id="task-list" draggable="false">
+                <!-- Tasks dynamically added here -->
+            </ul>
+            <p id="empty-state" class="empty-state">
+                <i class="fas fa-clipboard-list empty-icon"></i><br>
+                No tasks yet! Add your first task above.
+            </p>
+             <p id="no-results-state" class="empty-state" style="display: none;">
+                <i class="fas fa-search empty-icon"></i><br>
+                No tasks match your search or filter.
+            </p>
+        </main>
+
+        <footer>
+             <!-- Changed Footer -->
+             Crafted by Ismail Himi with <i class="fas fa-heart" style="color: var(--delete-color);"></i> & <i class="fas fa-code" style="color: var(--primary-color);"></i>
+        </footer>
+    </div>
+
+    <!-- Confirmation Modal (aria-hidden managed by JS) -->
+    <div id="confirmation-modal" class="modal-overlay" aria-hidden="true" style="display: none;">
+        <div class="modal-content" role="alertdialog" aria-modal="true" aria-labelledby="modal-message">
+            <p id="modal-message">Are you sure?</p>
+            <div class="modal-actions">
+                <button id="modal-confirm-btn" class="modal-btn confirm">Confirm</button>
+                <button id="modal-cancel-btn" class="modal-btn cancel">Cancel</button>
+            </div>
+            <button id="modal-close-btn" class="modal-close" aria-label="Close dialog">×</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
