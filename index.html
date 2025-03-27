@@ -3,40 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Tasks - by Ismail Himi</title> <!-- Changed Title -->
+    <title>Your Tasks - by Ismail Himi</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Day.js for date parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/relativeTime.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/customParseFormat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/isTomorrow.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/isToday.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/isoWeek.js"></script> <!-- For 'next week' -->
 </head>
-<body>
+<body class=""> <!-- Theme class added dynamically -->
 
     <canvas id="background-canvas"></canvas>
 
     <div class="app-container">
         <header>
-             <!-- Changed Header -->
             <h1><i class="fas fa-clipboard-check"></i> Your Tasks <i class="fas fa-bolt"></i></h1>
             <form id="task-form">
                 <div class="input-wrapper">
-                    <input type="text" id="task-input" placeholder="Add a new task (e.g., Buy milk #personal !important)" autocomplete="off" required>
+                     <input type="text" id="task-input" placeholder="Add task (e.g., Buy milk @personal due:tomorrow p:high)" autocomplete="off" required>
                     <i class="fas fa-plus input-icon"></i>
+                    <div id="input-error" class="input-error-tooltip" role="alert" aria-live="polite"></div> <!-- Input Error Message -->
                 </div>
-                <button type="submit" class="add-task-btn" aria-label="Add Task">
+                <button type="submit" class="add-task-btn" aria-label="Add Task (Enter)">
                     <i class="fas fa-paper-plane"></i> Add
                 </button>
             </form>
             <div class="search-sort-container">
                  <div class="search-wrapper">
-                    <input type="search" id="search-input" placeholder="Search tasks...">
+                    <input type="search" id="search-input" placeholder="Search tasks (S)...">
                     <i class="fas fa-search search-icon"></i>
                 </div>
                 <div class="sort-wrapper">
                     <label for="sort-select"><i class="fas fa-sort-amount-down"></i> Sort by:</label>
                     <select id="sort-select">
-                        <option value="manual">My Order</option> <!-- Added Manual Sort -->
+                        <option value="manual">My Order</option>
                         <option value="creation-desc">Newest First</option>
                         <option value="creation-asc">Oldest First</option>
                         <option value="due-date">Due Date</option>
@@ -63,21 +70,23 @@
                 <button class="filter-btn" data-filter="active" aria-label="Show active tasks">Active</button>
                 <button class="filter-btn" data-filter="important" aria-label="Show important tasks"><i class="fas fa-star"></i> Important</button>
                 <button class="filter-btn" data-filter="completed" aria-label="Show completed tasks">Completed</button>
+                <!-- New Archive Filter Button -->
+                <button class="filter-btn" data-filter="archived" aria-label="Show archived tasks"><i class="fas fa-archive"></i> Archived</button>
                 <div id="tag-filter-container"></div>
             </div>
-            <button id="clear-completed-btn" class="clear-btn" aria-label="Clear completed tasks" disabled>
-                 <i class="fas fa-broom"></i> Clear Done
+            <!-- Changed Button Text/Functionality -->
+            <button id="archive-completed-btn" class="clear-btn archive-btn" aria-label="Archive completed tasks" disabled>
+                 <i class="fas fa-archive"></i> Archive Done
             </button>
         </div>
 
         <main>
-            <!-- Added dragstart listener for drag & drop -->
             <ul id="task-list" draggable="false">
                 <!-- Tasks dynamically added here -->
             </ul>
             <p id="empty-state" class="empty-state">
                 <i class="fas fa-clipboard-list empty-icon"></i><br>
-                No tasks yet! Add your first task above.
+                No tasks yet! Add your first task above (N).
             </p>
              <p id="no-results-state" class="empty-state" style="display: none;">
                 <i class="fas fa-search empty-icon"></i><br>
@@ -86,7 +95,10 @@
         </main>
 
         <footer>
-             <!-- Changed Footer -->
+            <!-- Theme Toggle Button -->
+            <button id="theme-toggle-btn" class="theme-toggle" aria-label="Toggle Theme">
+                <i class="fas fa-sun"></i> <!-- Icon changes dynamically -->
+            </button>
              Crafted by Ismail Himi with <i class="fas fa-heart" style="color: var(--delete-color);"></i> & <i class="fas fa-code" style="color: var(--primary-color);"></i>
         </footer>
     </div>
@@ -99,7 +111,7 @@
                 <button id="modal-confirm-btn" class="modal-btn confirm">Confirm</button>
                 <button id="modal-cancel-btn" class="modal-btn cancel">Cancel</button>
             </div>
-            <button id="modal-close-btn" class="modal-close" aria-label="Close dialog">×</button>
+            <button id="modal-close-btn" class="modal-close" aria-label="Close dialog (Esc)">×</button>
         </div>
     </div>
 
